@@ -23,3 +23,18 @@ get '/:title' do
   @text = File.open("./memo/#{@title}").read
   erb:show
 end
+
+get '/edit/:title' do
+  @title = params[:title]
+  @text = File.open("./memo/#{@title}").read
+  erb :edit
+end
+
+patch '/:title' do
+  @title = params[:title]
+  @new_title = params[:new_title]
+  @new_text = params[:new_text]
+  File.rename("./memo/#{@title}", "./memo/#{@new_title}")
+  File.open("./memo/#{@new_title}", 'wb') { |f| f.print @new_text}
+  redirect "/"
+end 

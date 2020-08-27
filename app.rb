@@ -1,45 +1,47 @@
+# frozen_string_literal: true
+
 require "sinatra"
 require "sinatra/reloader"
 enable :method_override
 
-get '/' do
+get "/" do
   @memos = Dir.glob("*", base: "memo")
-  erb:index
+  erb :index
 end
 
-get '/new' do
-  erb:new
+get "/new" do
+  erb :new
 end
 
-post '/create' do
+post "/create" do
   @title = params[:title]
   @text = params[:text]
-  File.open("./memo/#{@title}", 'wb') { |f| f.print @text}
+  File.open("./memo/#{@title}", "wb") { |f| f.print @text }
   redirect "/"
 end
 
-get '/:title' do
+get "/:title" do
   @title = params[:title]
   @text = File.open("./memo/#{@title}").read
-  erb:show
+  erb :show
 end
 
-get '/edit/:title' do
+get "/edit/:title" do
   @title = params[:title]
   @text = File.open("./memo/#{@title}").read
   erb :edit
 end
 
-patch '/:title' do
+patch "/:title" do
   @title = params[:title]
   @new_title = params[:new_title]
   @new_text = params[:new_text]
   File.rename("./memo/#{@title}", "./memo/#{@new_title}")
-  File.open("./memo/#{@new_title}", 'wb') { |f| f.print @new_text}
+  File.open("./memo/#{@new_title}", "wb") { |f| f.print @new_text }
   redirect "/"
-end 
+end
 
-delete '/:title' do
+delete "/:title" do
   title = params[:title]
   File.delete("./memo/#{title}")
   redirect "/"

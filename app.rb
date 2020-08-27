@@ -17,3 +17,9 @@ post '/create' do
   File.open("./memo/#{@title}", 'wb') { |f| f.print @text}
   redirect "/"
 end
+
+get '/:title' do
+  @title = params[:title]
+  @text = File.open("./memo/#{@title}").read
+  erb:show
+end

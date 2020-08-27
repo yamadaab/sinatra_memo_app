@@ -38,3 +38,9 @@ patch '/:title' do
   File.open("./memo/#{@new_title}", 'wb') { |f| f.print @new_text}
   redirect "/"
 end 
+
+delete '/:title' do
+  title = params[:title]
+  File.delete("./memo/#{title}")
+  redirect "/"
+end

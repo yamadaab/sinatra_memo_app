@@ -3,7 +3,6 @@
 require "sinatra"
 require "sinatra/reloader"
 
-
 get "/" do
   @memos = Dir.glob("*", base: "memo")
   erb :index

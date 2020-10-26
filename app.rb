@@ -2,9 +2,17 @@
 
 require "sinatra"
 require "sinatra/reloader"
+require 'pg'
 
 get "/" do
-  @memos = Dir.glob("*", base: "memo")
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+
+    @result = connection.exec("SELECT * FROM Memos")
+    ensure
+      connection.close if connection
+    end
   erb :index
 end
 
@@ -13,35 +21,68 @@ get "/new" do
 end
 
 post "/memo" do
-  @title = params[:title]
-  @text = params[:text]
-  File.open("./memo/#{@title}", "wb") { |f| f.print @text }
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+
+    title = params[:title]
+    text = params[:text]
+    connection.exec(
+      'INSERT INTO Memos (title, memo) VALUES ($1, $2);',  
+      [title, text],
+    )
+    ensure  
+      connection.close if connection
+    end  
   redirect "/"
 end
 
-get "/:title" do
-  @title = params[:title]
-  @text = File.open("./memo/#{@title}").read
+get "/:id" do
+  id= params[:id]
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+    @result = connection.exec("SELECT * FROM Memos WHERE id='#{id}'")
+  ensure
+    connection.close if connection
+  end
   erb :show
 end
 
-get "/edit/:title" do
-  @title = params[:title]
-  @text = File.open("./memo/#{@title}").read
+get "/edit/:id" do
+  id= params[:id]
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+    @result = connection.exec("SELECT * FROM Memos WHERE id='#{id}';")
+  ensure
+    connection.close if connection
+  end
   erb :edit
 end
 
-patch "/:title" do
-  @title = params[:title]
-  @new_title = params[:new_title]
-  @new_text = params[:new_text]
-  File.rename("./memo/#{@title}", "./memo/#{@new_title}")
-  File.open("./memo/#{@new_title}", "wb") { |f| f.print @new_text }
+patch "/:id" do
+  id= params[:id]
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+    new_title = params[:new_title]
+    new_memo = params[:new_memo]
+    result = connection.exec("UPDATE Memos SET title = '#{new_title}', memo = '#{new_memo}' WHERE id='#{id}';")
+  ensure
+    connection.close if connection
+  end
   redirect "/"
 end
 
-delete "/:title" do
-  title = params[:title]
-  File.delete("./memo/#{title}")
+delete "/:id" do
+  id = params[:id]
+  begin
+    settings = { host: 'localhost', user: 'yamadashingo', password: 'password', dbname: 'postgres' }  
+    connection = PG::connect(settings)  
+    result = connection.exec("DELETE FROM Memos WHERE id='#{id}';")
+  ensure
+    connection.close if connection
+  end
   redirect "/"
 end

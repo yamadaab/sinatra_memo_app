@@ -11,7 +11,6 @@ get "/" do
         connection.close if connection
     end
   erb :index
-
 end
 
 get "/new" do

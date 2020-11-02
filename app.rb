@@ -6,10 +6,10 @@ require "pg"
 
 get "/" do
   begin
-      @result = connection.exec("SELECT * FROM Memos")
-      ensure
-        connection.close if connection
-    end
+    @result = connection.exec("SELECT * FROM Memos")
+  ensure
+    connection.close if connection
+  end
   erb :index
 end
 
@@ -19,14 +19,14 @@ end
 
 post "/memo" do
   begin
-      title = params[:title]
-      text = params[:text]
-      connection.exec(
-        "INSERT INTO Memos (title, memo) VALUES ($1, $2);",
-        [title, text],
-      )
-      ensure
-        connection.close if connection
+    title = params[:title]
+    text = params[:text]
+    connection.exec(
+      "INSERT INTO Memos (title, memo) VALUES ($1, $2);",
+      [title, text],
+    )
+    ensure
+      connection.close if connection
     end
   redirect "/"
 end

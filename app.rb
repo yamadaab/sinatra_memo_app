@@ -5,7 +5,7 @@ require "sinatra/reloader"
 require "pg"
 
 get "/" do
-    @result = connection(sql: "SELECT * FROM Memos")
+  @result = connection(sql: "SELECT * FROM Memos")
   erb :index
 end
 

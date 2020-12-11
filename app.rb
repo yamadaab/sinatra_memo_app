@@ -14,7 +14,7 @@ get "/new" do
 end
 
 post "/memo" do
-  title = params[:title] 
+  title = params[:title]
   memo = params[:memo]
   if title == "" && memo == ""
     redirect "/new"

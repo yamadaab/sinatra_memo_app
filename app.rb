@@ -14,9 +14,17 @@ get "/new" do
 end
 
 post "/memo" do
-  title = params[:title]
-  text = params[:text]
-  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, text])
+  title = params[:title] 
+  memo = params[:memo]
+  if title == "" && memo == ""
+    redirect "/new"
+  elsif title == ""
+    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: ["未入力", memo])
+  elsif memo == ""
+    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, "未入力"])
+  else
+    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo])
+  end
   redirect "/"
 end
 
@@ -36,7 +44,15 @@ patch "/:id" do
   id= params[:id]
   new_title = params[:new_title]
   new_memo = params[:new_memo]
-  connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id])
+  if new_title == "" && new_memo == ""
+    redirect "/edit/#{id}"
+  elsif new_title == ""
+    connection(sql: "UPDATE Memos SET  memo = $1 WHERE id = $2;", key: [new_memo, id])
+  elsif new_memo == ""
+    connection(sql: "UPDATE Memos SET  title = $1 WHERE id = $2;", key: [new_title, id])
+  else
+    connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id])
+  end
   redirect "/"
 end
 

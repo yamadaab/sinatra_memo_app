@@ -16,11 +16,11 @@ end
 post "/memo" do
   title = params[:title]
   memo = params[:memo]
-  if title == "" && memo == ""
+  if title.blank? && memo.blank?
     redirect "/new"
-  elsif title == ""
+  elsif title.blank?
     connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: ["未入力", memo])
-  elsif memo == ""
+  elsif memo.blank?
     connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, "未入力"])
   else
     connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo])
@@ -44,11 +44,11 @@ patch "/:id" do
   id= params[:id]
   new_title = params[:new_title]
   new_memo = params[:new_memo]
-  if new_title == "" && new_memo == ""
+  if new_title.blank? && new_memo.blank?
     redirect "/edit/#{id}"
-  elsif new_title == ""
+  elsif new_title.blank?
     connection(sql: "UPDATE Memos SET  memo = $1 WHERE id = $2;", key: [new_memo, id])
-  elsif new_memo == ""
+  elsif new_memo.blank?
     connection(sql: "UPDATE Memos SET  title = $1 WHERE id = $2;", key: [new_title, id])
   else
     connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id])

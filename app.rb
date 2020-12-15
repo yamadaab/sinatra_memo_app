@@ -16,15 +16,10 @@ end
 post "/memo" do
   title = params[:title]
   memo = params[:memo]
-  if title.blank? && memo.blank?
-    redirect "/new"
-  elsif title.blank?
-    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: ["未入力", memo])
-  elsif memo.blank?
-    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, "未入力"])
-  else
-    connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo])
-  end
+  redirect "/new" if title.empty? && memo.empty?
+  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: ["未入力", memo]) if title.empty?
+  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, "未入力"]) if memo.empty?
+  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo]) if !title.empty? && !memo.empty?
   redirect "/"
 end
 
@@ -44,15 +39,10 @@ patch "/:id" do
   id= params[:id]
   new_title = params[:new_title]
   new_memo = params[:new_memo]
-  if new_title.blank? && new_memo.blank?
-    redirect "/edit/#{id}"
-  elsif new_title.blank?
-    connection(sql: "UPDATE Memos SET  memo = $1 WHERE id = $2;", key: [new_memo, id])
-  elsif new_memo.blank?
-    connection(sql: "UPDATE Memos SET  title = $1 WHERE id = $2;", key: [new_title, id])
-  else
-    connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id])
-  end
+  redirect "/edit/#{id}" if new_title.empty? && new_memo.empty?
+  connection(sql: "UPDATE Memos SET  memo = $1 WHERE id = $2;", key: [new_memo, id]) if new_title.empty?
+  connection(sql: "UPDATE Memos SET  title = $1 WHERE id = $2;", key: [new_title, id]) if new_memo.empty?
+  connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id]) if !new_title.empty? && !new_memo.empty?
   redirect "/"
 end
 

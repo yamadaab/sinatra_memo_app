@@ -17,8 +17,6 @@ post "/memo" do
   title = params[:title]
   memo = params[:memo]
   redirect "/new" if title.empty? && memo.empty?
-  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: ["未入力", memo]) if title.empty?
-  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, "未入力"]) if memo.empty?
   connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo]) if !title.empty? && !memo.empty?
   redirect "/"
 end

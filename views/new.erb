@@ -6,20 +6,16 @@
 <body>
   <div class="container col-md-2">
     <h1>メモアプリ</h1>
-
     　<form method="post" action="memo">
-    <div class="form-group">
-          <label for="title">メモタイトル</label>
-          <input type="text" class="form-control" name="title" >
-        </div>
-
         <div class="form-group">
-          <label for="text">メモ内容</label>
-          <textarea type="text" class="form-control" name="text" ></textarea>
+          <label for="title">メモタイトル</label>
+          <input type="text" class="form-control" name="title" value="未入力">
         </div>
-
+        <div class="form-group">
+          <label for="memo">メモ内容</label>
+          <textarea type="text" class="form-control" name="memo" >未入力</textarea>
+        </div>
       <input class = "btn btn-primary m-4"type="submit" value="作成する">
-
       </form>
       <p><a href="/">メモ一覧へ戻る</a></p>
     <div>

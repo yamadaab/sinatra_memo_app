@@ -2,9 +2,10 @@
 
 require "sinatra"
 require "sinatra/reloader"
+require "pg"
 
 get "/" do
-  @memos = Dir.glob("*", base: "memo")
+  @result = connection(sql: "SELECT * FROM Memos")
   erb :index
 end
 
@@ -13,35 +14,47 @@ get "/new" do
 end
 
 post "/memo" do
-  @title = params[:title]
-  @text = params[:text]
-  File.open("./memo/#{@title}", "wb") { |f| f.print @text }
+  title = params[:title]
+  memo = params[:memo]
+  redirect "/new" if title.empty? && memo.empty?
+  connection(sql: "INSERT INTO Memos (title, memo) VALUES ($1, $2);", key: [title, memo]) if !title.empty? && !memo.empty?
   redirect "/"
 end
 
-get "/:title" do
-  @title = params[:title]
-  @text = File.open("./memo/#{@title}").read
+get "/:id" do
+  id= params[:id]
+  @result = connection(sql: "SELECT * FROM Memos WHERE id = $1;", key: [id])
   erb :show
 end
 
-get "/edit/:title" do
-  @title = params[:title]
-  @text = File.open("./memo/#{@title}").read
+get "/edit/:id" do
+  id= params[:id]
+  @result = connection(sql: "SELECT * FROM Memos WHERE id = $1;", key: [id])
   erb :edit
 end
 
-patch "/:title" do
-  @title = params[:title]
-  @new_title = params[:new_title]
-  @new_text = params[:new_text]
-  File.rename("./memo/#{@title}", "./memo/#{@new_title}")
-  File.open("./memo/#{@new_title}", "wb") { |f| f.print @new_text }
+patch "/:id" do
+  id= params[:id]
+  new_title = params[:new_title]
+  new_memo = params[:new_memo]
+  redirect "/edit/#{id}" if new_title.empty? && new_memo.empty?
+  connection(sql: "UPDATE Memos SET  memo = $1 WHERE id = $2;", key: [new_memo, id]) if new_title.empty?
+  connection(sql: "UPDATE Memos SET  title = $1 WHERE id = $2;", key: [new_title, id]) if new_memo.empty?
+  connection(sql: "UPDATE Memos SET title = $1, memo = $2 WHERE id = $3;", key: [new_title, new_memo, id]) if !new_title.empty? && !new_memo.empty?
   redirect "/"
 end
 
-delete "/:title" do
-  title = params[:title]
-  File.delete("./memo/#{title}")
+delete "/:id" do
+  id = params[:id]
+  connection(sql: "DELETE FROM Memos WHERE id = $1;", key: [id])
   redirect "/"
+end
+
+def connection(sql:, key: [])
+  connect = PG.connect(host: "localhost", user: "yamadashingo", password: "password", dbname: "postgres")
+  begin
+    connect.exec(sql, key)
+  ensure
+    connect.close if connect
+  end
 end

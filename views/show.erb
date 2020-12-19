@@ -16,18 +16,17 @@
 <body>
 <div class="container col-md-2">
   <h1>メモアプリ</h1>
-  <p>メモタイトル</p>
-  <h2> <%= @title %> </h2>
-  <p>メモ内容</p>
-  <h2> <%= @text %> </h2>
-  
-  <form action=<%= "/#{params[:title]}" %> method="post">
+  <% @result.each do |memo| %>
+    <p>メモタイトル</p>
+    <%= memo["title"] %>
+    <p>メモ内容</p>
+    <%= memo["memo"] %>
+  <% end %>
+  <form action=<%= "/#{params[:id]}" %> method="post">
   <input type="hidden" name="_method" value="delete""> 
   <p><input class = "btn btn-primary" type="submit" value="削除"></p>
-  </form>
- 
-  <a href=<%= "/edit/#{params[:title]}" %> class="btn btn-primary " role="button" aria-pressed="true">編集</a>
-  
+  </form> 
+  <a href=<%= "/edit/#{params[:id]}" %> class="btn btn-primary " role="button" aria-pressed="true">編集</a>
   <p><a href="/">メモ一覧へ戻る</a></p>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
